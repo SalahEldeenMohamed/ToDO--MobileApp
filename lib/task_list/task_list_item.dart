@@ -57,7 +57,8 @@ class TaskListItem extends StatelessWidget {
             children: [
               Container(
                 margin: EdgeInsets.all(12),
-                color: AppColors.primaryColor,
+                color: task.isDone ? AppColors.greenColor : AppColors
+                    .primaryColor,
                 height: MediaQuery
                     .of(context)
                     .size
@@ -75,7 +76,8 @@ class TaskListItem extends StatelessWidget {
                           .textTheme
                           .titleLarge
                           ?.copyWith(
-                        color: AppColors.primaryColor,
+                        color: task.isDone ? Colors.green : AppColors
+                            .primaryColor,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -89,22 +91,62 @@ class TaskListItem extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  vertical: MediaQuery
-                      .of(context)
-                      .size
-                      .height * 0.01,
-                  horizontal: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 0.05,
+              // if (!task.isDone)
+              //   InkWell(
+              //     onTap: () async {
+              //       task.isDone = true;
+              //
+              //       await FirebaseUtils.updateTask(task);
+              //
+              //       Provider.of<ListProvider>(context, listen: true)
+              //           .getAllTasksFromFireStore();
+              //     },
+              //     child: Container(
+              //       padding: EdgeInsets.symmetric(
+              //         vertical: MediaQuery.of(context).size.height * 0.01,
+              //         horizontal: MediaQuery.of(context).size.width * 0.05,
+              //       ),
+              //       decoration: BoxDecoration(
+              //         borderRadius: BorderRadius.circular(12),
+              //         color: AppColors.primaryColor,
+              //       ),
+              //       child: const Icon(
+              //         Icons.check,
+              //         color: Colors.white,
+              //         size: 35,
+              //       ),
+              //     ),
+              //   ),
+              InkWell(
+                onTap: task.isDone
+                    ? null // ❌ disables click
+                    : () {
+                  Provider.of<ListProvider>(context, listen: false)
+                      .markTaskDone(task);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: MediaQuery
+                        .of(context)
+                        .size
+                        .height * 0.01,
+                    horizontal: MediaQuery
+                        .of(context)
+                        .size
+                        .width * 0.05,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: task.isDone
+                        ? AppColors.greenColor // ✅ done color
+                        : AppColors.primaryColor,
+                  ),
+                  child: const Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 35,
+                  ),
                 ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: AppColors.primaryColor,
-                ),
-                child: Icon(Icons.check, color: AppColors.whiteColor, size: 35),
               ),
             ],
           ),

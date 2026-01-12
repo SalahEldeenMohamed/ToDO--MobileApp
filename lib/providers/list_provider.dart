@@ -45,4 +45,10 @@ class ListProvider extends ChangeNotifier {
     /// getAllTasksFromFireStore has notifyListeners so
     /// i don't need to add notifyListeners again here
   }
+
+  void markTaskDone(Task task) {
+    task.isDone = true;
+    notifyListeners(); // 🚀 INSTANT UI UPDATE
+    FirebaseUtils.updateTask(task); // background save
+  }
 }

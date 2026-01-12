@@ -2,13 +2,25 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:todo_app/model/task.dart';
 
 class FirebaseUtils {
+  // static CollectionReference<Task> getTasksCollection() {
+  //   return FirebaseFirestore.instance
+  //       .collection(Task.collectionName)
+  //       .withConverter<Task>(
+  //         fromFirestore: (snapshot, options) =>
+  //             Task.fromFireStore(snapshot.data()!),
+  //         toFirestore: (task, options) => task.toFireStore(),
+  //       );
+  // }
   static CollectionReference<Task> getTasksCollection() {
     return FirebaseFirestore.instance
         .collection(Task.collectionName)
         .withConverter<Task>(
-          fromFirestore: (snapshot, options) =>
-              Task.fromFireStore(snapshot.data()!),
-          toFirestore: (task, options) => task.toFireStore(),
+          fromFirestore: (snapshot, _) {
+            Task task = Task.fromFireStore(snapshot.data()!);
+            task.id = snapshot.id; // 🔥 VERY IMPORTANT
+            return task;
+          },
+          toFirestore: (task, _) => task.toFireStore(),
         );
   }
 
@@ -21,5 +33,9 @@ class FirebaseUtils {
 
   static Future<void> deleteTaskFromFireStore(Task task) {
     return getTasksCollection().doc(task.id).delete();
+  }
+
+  static Future<void> updateTask(Task task) {
+    return getTasksCollection().doc(task.id).update({'isDone': task.isDone});
   }
 }
