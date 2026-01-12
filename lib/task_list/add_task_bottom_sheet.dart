@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/app_colors.dart';
+import 'package:todo_app/firebase_utils.dart';
+
+import '../l10n/app_localizations.dart';
+import '../model/task.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
   @override
@@ -9,6 +13,8 @@ class AddTaskBottomSheet extends StatefulWidget {
 class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   var formKey = GlobalKey<FormState>();
   var selectedDate = DateTime.now();
+  String title = '';
+  String description = '';
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +25,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
         children: [
           Center(
             child: Text(
-              'Add new task',
+              AppLocalizations.of(context)!.addTaskTitle,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -31,28 +37,35 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 TextFormField(
                   validator: (text) {
                     if (text == null || text.isEmpty) {
-                      return 'Please enter task title';
+                      return AppLocalizations.of(context)!.taskWarning;
                     }
                     return null;
                   },
-                  decoration: InputDecoration(hintText: 'Enter Task Title'),
+                  onChanged: (text) {
+                    title = text;
+                  },
+                  decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context)!.enterTask),
                 ),
                 SizedBox(height: 18),
                 TextFormField(
                   validator: (text) {
                     if (text == null || text.isEmpty) {
-                      return 'Please enter task Description';
+                      return AppLocalizations.of(context)!.descWarning;
                     }
                     return null;
                   },
+                  onChanged: (text) {
+                    description = text;
+                  },
                   decoration: InputDecoration(
-                    hintText: 'Enter Task Description',
+                    hintText: AppLocalizations.of(context)!.enterDesc,
                   ),
                   maxLines: 4,
                 ),
                 SizedBox(height: 18),
                 Text(
-                  'Select Date',
+                  AppLocalizations.of(context)!.selectTime,
                   style: Theme.of(context).textTheme.bodyLarge,
                   textAlign: TextAlign.start,
                 ),
@@ -73,7 +86,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     addTask();
                   },
                   child: Text(
-                    'Add',
+                    AppLocalizations.of(context)!.addText,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   style: ElevatedButton.styleFrom(
@@ -91,6 +104,17 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   void addTask() {
     if (formKey.currentState?.validate() == true) {
       /// add task
+      Task task = Task(
+          title: title,
+          description: description,
+          dateTime: selectedDate
+      );
+      FirebaseUtils.addTaskToFireStore(task).timeout(Duration(seconds: 2),
+          onTimeout: () {
+            print('task added successfully');
+            Navigator.pop(context);
+          }
+      );
     }
   }
 
