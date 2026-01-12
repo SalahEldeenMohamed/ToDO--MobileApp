@@ -1,0 +1,17 @@
+{
+"title" : "To Do List",
+"addTaskTitle" : "Add new Task",
+"selectTime" : "Select Date",
+"settings" : "Settings",
+"language" : "Language",
+"arabic" : "Arabic",
+"english" : "English",
+"theme" : "Theme",
+"dark" : "Dark",
+"light" : "Light",
+"enterTask" : "Enter Task Title",
+"enterDesc" : "Enter Task Description",
+"addText" : "Add",
+"descWarning" : "Please enter task Description",
+"taskWarning": "Please enter task title"
+}
