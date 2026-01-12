@@ -22,9 +22,10 @@ class _TaskListTabState extends State<TaskListTab> {
     return Column(
       children: [
         EasyDateTimeLine(
-          initialDate: DateTime.now(),
+          initialDate: listProvider.selectDate,
           onDateChange: (selectedDate) {
             //`selectedDate` the new date selected.
+            listProvider.changeSelectDate(selectedDate);
           },
           headerProps: const EasyHeaderProps(
             monthPickerType: MonthPickerType.switcher,
