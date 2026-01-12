@@ -1,12 +1,24 @@
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/providers/list_provider.dart';
 import 'package:todo_app/task_list/task_list_item.dart';
 
-class TaskListTab extends StatelessWidget {
-  const TaskListTab({super.key});
+class TaskListTab extends StatefulWidget {
+  @override
+  State<TaskListTab> createState() => _TaskListTabState();
+}
 
+class _TaskListTabState extends State<TaskListTab> {
   @override
   Widget build(BuildContext context) {
+    /// read data one time only => get()
+    /// real time change => snapshots()
+
+    var listProvider = Provider.of<ListProvider>(context);
+    if (listProvider.tasksList.isEmpty) {
+      listProvider.getAllTasksFromFireStore();
+    }
     return Column(
       children: [
         EasyDateTimeLine(
@@ -35,9 +47,9 @@ class TaskListTab extends StatelessWidget {
         Expanded(
           child: ListView.builder(
             itemBuilder: (context, index) {
-              return TaskListItem();
+              return TaskListItem(task: listProvider.tasksList[index]);
             },
-            itemCount: 30,
+            itemCount: listProvider.tasksList.length,
           ),
         ),
       ],

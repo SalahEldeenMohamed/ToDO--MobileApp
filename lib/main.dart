@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/my_theme_data.dart';
 import 'package:todo_app/providers/app_config_provider.dart';
+import 'package:todo_app/providers/list_provider.dart';
 import 'package:todo_app/settings/settings_tab.dart';
 
 import 'home_screen.dart';
@@ -26,8 +27,14 @@ void main() async {
   await Firebase.initializeApp();
   await FirebaseFirestore.instance.disableNetwork();
 
-  runApp(ChangeNotifierProvider(
-      create: (context) => AppConfigProvider(),
+  runApp(
+      MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+                create: (context) => AppConfigProvider()),
+            ChangeNotifierProvider(
+                create: (context) => ListProvider()),
+          ],
       child: MyApp())
   );
 }

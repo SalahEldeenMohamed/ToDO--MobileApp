@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/app_colors.dart';
 import 'package:todo_app/firebase_utils.dart';
 
 import '../l10n/app_localizations.dart';
 import '../model/task.dart';
+import '../providers/list_provider.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
   @override
@@ -15,9 +17,11 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   var selectedDate = DateTime.now();
   String title = '';
   String description = '';
+  late ListProvider listProvider;
 
   @override
   Widget build(BuildContext context) {
+    listProvider = Provider.of<ListProvider>(context);
     return Container(
       margin: EdgeInsets.all(20),
       child: Column(
@@ -112,6 +116,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
       FirebaseUtils.addTaskToFireStore(task).timeout(Duration(seconds: 2),
           onTimeout: () {
             print('task added successfully');
+            listProvider.getAllTasksFromFireStore();
             Navigator.pop(context);
           }
       );
