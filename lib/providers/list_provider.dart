@@ -51,4 +51,12 @@ class ListProvider extends ChangeNotifier {
     notifyListeners(); // 🚀 INSTANT UI UPDATE
     FirebaseUtils.updateTask(task); // background save
   }
+
+  void updateTaskInList(Task updatedTask) {
+    int index = tasksList.indexWhere((task) => task.id == updatedTask.id);
+    if (index != -1) {
+      tasksList[index] = updatedTask;
+      notifyListeners(); // rebuild UI instantly
+    }
+  }
 }

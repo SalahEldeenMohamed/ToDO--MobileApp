@@ -36,6 +36,9 @@ class FirebaseUtils {
   }
 
   static Future<void> updateTask(Task task) {
-    return getTasksCollection().doc(task.id).update({'isDone': task.isDone});
+    return FirebaseFirestore.instance
+        .collection(Task.collectionName)
+        .doc(task.id) // 🔥 very important
+        .update(task.toFireStore());
   }
 }
