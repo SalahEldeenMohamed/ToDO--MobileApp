@@ -87,6 +87,8 @@ class _TaskListTabState extends State<TaskListTab> {
         listen: false,
       ).getAllTasksFromFireStore();
     });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
