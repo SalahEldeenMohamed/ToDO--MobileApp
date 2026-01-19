@@ -1,8 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/app_colors.dart';
+import 'package:todo_app/auth/login/login_screen.dart';
 import 'package:todo_app/dialog_utils.dart';
+import 'package:todo_app/firebase_utils.dart';
+import 'package:todo_app/model/my_user.dart';
 
+import '../../providers/auth_user_provider.dart';
 import 'custom_text_form_field.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -146,7 +151,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
               email: emailController.text,
               password: passwordController.text,
             );
-
+        MyUser myUser = MyUser(
+            id: credential.user?.uid ?? '',
+            name: nameController.text,
+            email: emailController.text
+        );
+        var authProvider = Provider.of<AuthUserProvider>(
+            context, listen: false);
+        ;
+        authProvider.updateUser(myUser);
+        await FirebaseUtils.addUserToFireStore(myUser);
         /// hide loading
         DialogUtils.hideLoading(context);
 
@@ -154,6 +168,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         DialogUtils.showMessage(
           context: context,
           message: 'Register Successfully',
+          posActionName: 'Ok',
+          posAction: () {
+            Navigator.of(context).pushNamed(LoginScreen.routeName);
+          },
         );
         print(credential.user?.uid ?? "");
       }

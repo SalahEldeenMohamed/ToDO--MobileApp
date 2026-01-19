@@ -1,6 +1,7 @@
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/providers/auth_user_provider.dart';
 import 'package:todo_app/providers/list_provider.dart';
 import 'package:todo_app/task_list/task_list_item.dart';
 
@@ -82,15 +83,19 @@ class _TaskListTabState extends State<TaskListTab> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<AuthUserProvider>(
+          context, listen: false);
+
       Provider.of<ListProvider>(
         context,
         listen: false,
-      ).getAllTasksFromFireStore();
+      ).getAllTasksFromFireStore(authProvider.currentUser!.id!);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    var authProvider = Provider.of<AuthUserProvider>(context);
     return Column(
       children: [
         Consumer<ListProvider>(
@@ -98,7 +103,8 @@ class _TaskListTabState extends State<TaskListTab> {
             return EasyDateTimeLine(
               initialDate: listProvider.selectDate,
               onDateChange: (selectedDate) {
-                listProvider.changeSelectDate(selectedDate);
+                listProvider.changeSelectDate(
+                    selectedDate, authProvider.currentUser!.id!);
               },
               headerProps: const EasyHeaderProps(
                 monthPickerType: MonthPickerType.switcher,

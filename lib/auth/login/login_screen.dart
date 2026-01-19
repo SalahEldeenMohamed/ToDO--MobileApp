@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/app_colors.dart';
 import 'package:todo_app/auth/register/register_screen.dart';
 import 'package:todo_app/dialog_utils.dart';
+import 'package:todo_app/firebase_utils.dart';
 import 'package:todo_app/home_screen.dart';
 
+import '../../providers/auth_user_provider.dart';
 import '../register/custom_text_form_field.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,7 +19,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
-
   TextEditingController passwordController = TextEditingController();
 
   var formKey = GlobalKey<FormState>();
@@ -122,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void Login() async {
     if (formKey.currentState?.validate() == true) {
-      /// register
+      /// login
       DialogUtils.showLoading(context: context, message: 'Loading...');
       try {
         final credential = await FirebaseAuth.instance
@@ -130,17 +132,24 @@ class _LoginScreenState extends State<LoginScreen> {
               email: emailController.text,
               password: passwordController.text,
             );
-
+        var user = await FirebaseUtils.readUserFromFireStore(
+            credential.user?.uid ?? '');
+        if (user == null) {
+          return;
+        }
+        var authProvider = Provider.of<AuthUserProvider>(
+            context, listen: false);
+        ;
+        authProvider.updateUser(user);
         /// hide loading
         DialogUtils.hideLoading(context);
-
         /// show message
         DialogUtils.showMessage(
           context: context,
           message: 'Login Successfully',
           posActionName: 'Ok',
           posAction: () {
-            Navigator.of(context).pushNamed(HomeScreen.routeName);
+            Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
           },
         );
         print(credential.user?.uid ?? "");
