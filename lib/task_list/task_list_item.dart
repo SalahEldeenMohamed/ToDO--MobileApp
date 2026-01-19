@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/app_colors.dart';
 import 'package:todo_app/firebase_utils.dart';
 
 import '../edit_task_screen.dart';
 import '../model/task.dart';
+import '../providers/auth_user_provider.dart';
 import '../providers/list_provider.dart';
 
 class TaskListItem extends StatelessWidget {
@@ -15,6 +17,7 @@ class TaskListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var authProvider = Provider.of<AuthUserProvider>(context);
     return Consumer<ListProvider>(
       builder: (context, listProvider, _) {
         // Always get the latest task from Provider
@@ -32,8 +35,28 @@ class TaskListItem extends StatelessWidget {
                 SlidableAction(
                   borderRadius: BorderRadius.circular(15),
                   onPressed: (context) async {
-                    await FirebaseUtils.deleteTaskFromFireStore(currentTask);
-                    listProvider.getAllTasksFromFireStore();
+                    await FirebaseUtils.deleteTaskFromFireStore(
+                        currentTask, authProvider.currentUser!.id!)
+                        .then((value) {
+                      Fluttertoast.showToast(
+                          msg: "Task deleted successfully",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0
+                      );
+                      print('Task deleted successfully');
+                      listProvider.getAllTasksFromFireStore(
+                          authProvider.currentUser!.id!);
+                    }).timeout(Duration(seconds: 1), onTimeout: () {
+                      print('Task deleted successfully');
+                      listProvider.getAllTasksFromFireStore(authProvider
+                          .currentUser!.id!);
+                    });
+                    listProvider.getAllTasksFromFireStore(
+                        authProvider.currentUser!.id!);
                   },
                   backgroundColor: AppColors.redColor,
                   foregroundColor: AppColors.whiteColor,

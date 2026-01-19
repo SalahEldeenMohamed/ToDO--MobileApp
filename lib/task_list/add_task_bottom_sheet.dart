@@ -5,6 +5,7 @@ import 'package:todo_app/firebase_utils.dart';
 
 import '../l10n/app_localizations.dart';
 import '../model/task.dart';
+import '../providers/auth_user_provider.dart';
 import '../providers/list_provider.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
@@ -113,10 +114,19 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
           description: description,
           dateTime: selectedDate
       );
-      FirebaseUtils.addTaskToFireStore(task).timeout(Duration(seconds: 2),
+      var authProvider = Provider.of<AuthUserProvider>(context, listen: false);
+      FirebaseUtils
+          .addTaskToFireStore(task, authProvider.currentUser!.id!)
+          .then((value) {
+        print('task added successfully');
+        listProvider.getAllTasksFromFireStore(authProvider.currentUser!.id!);
+        Navigator.pop(context);
+      })
+          .timeout(Duration(seconds: 2),
           onTimeout: () {
             print('task added successfully');
-            listProvider.getAllTasksFromFireStore();
+            listProvider.getAllTasksFromFireStore(
+                authProvider.currentUser!.id!);
             Navigator.pop(context);
           }
       );

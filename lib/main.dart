@@ -1,14 +1,16 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/auth/register/register_screen.dart';
 import 'package:todo_app/my_theme_data.dart';
 import 'package:todo_app/providers/app_config_provider.dart';
+import 'package:todo_app/providers/auth_user_provider.dart';
 import 'package:todo_app/providers/list_provider.dart';
 import 'package:todo_app/settings/settings_tab.dart';
 
+import 'auth/login/login_screen.dart';
 import 'home_screen.dart';
 import 'l10n/app_localizations.dart';
 
@@ -25,7 +27,8 @@ void main() async {
   )
       :
   await Firebase.initializeApp();
-  await FirebaseFirestore.instance.disableNetwork();
+
+  /// await FirebaseFirestore.instance.disableNetwork(); //Now we are online
 
   runApp(
       MultiProvider(
@@ -34,6 +37,8 @@ void main() async {
                 create: (context) => AppConfigProvider()),
             ChangeNotifierProvider(
                 create: (context) => ListProvider()),
+            ChangeNotifierProvider(
+                create: (context) => AuthUserProvider()),
           ],
       child: MyApp())
   );
@@ -47,10 +52,12 @@ class MyApp extends StatelessWidget {
     var provider = Provider.of<AppConfigProvider>(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: HomeScreen.routeName,
+      initialRoute: LoginScreen.routeName,
       routes: {
         HomeScreen.routeName: (context) => HomeScreen(),
         SettingsTab.routeName: (context) => SettingsTab(),
+        RegisterScreen.routeName: (context) => RegisterScreen(),
+        LoginScreen.routeName: (context) => LoginScreen(),
       },
       theme: MyThemeData.lightTheme,
       localizationsDelegates: AppLocalizations.localizationsDelegates,

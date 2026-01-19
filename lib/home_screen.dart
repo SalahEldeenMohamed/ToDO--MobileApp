@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/app_colors.dart';
+import 'package:todo_app/auth/login/login_screen.dart';
+import 'package:todo_app/providers/auth_user_provider.dart';
+import 'package:todo_app/providers/list_provider.dart';
 import 'package:todo_app/settings/settings_tab.dart';
 import 'package:todo_app/task_list/add_task_bottom_sheet.dart';
 import 'package:todo_app/task_list/task_list_tab.dart';
@@ -18,15 +22,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var listProvider = Provider.of<ListProvider>(context);
+    var authProvider = Provider.of<AuthUserProvider>(context);
     return Scaffold(
       appBar: AppBar(
 
         /// toolbarHeight: MediaQuery.of(context).size.height*0.15,
-        title: Text(AppLocalizations.of(context)!.title,
+        title: Text(AppLocalizations.of(context)!.title +
+            ' ${authProvider.currentUser!.name!}',
             style: Theme
                 .of(context)
                 .textTheme
                 .titleLarge),
+        actions: [
+          IconButton(onPressed: () {
+            listProvider.tasksList = [];
+            // authProvider.currentUser = null;
+            Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+          }, icon: Icon(Icons.logout))
+        ],
       ),
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),

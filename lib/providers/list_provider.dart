@@ -9,9 +9,10 @@ class ListProvider extends ChangeNotifier {
   List<Task> tasksList = [];
   DateTime selectDate = DateTime.now();
 
-  void getAllTasksFromFireStore() async {
+  void getAllTasksFromFireStore(String uId) async {
     /// collection => document => data
-    QuerySnapshot<Task> querySnapshot = await FirebaseUtils.getTasksCollection()
+    QuerySnapshot<Task> querySnapshot = await FirebaseUtils.getTasksCollection(
+        uId)
         .get();
 
     /// List<QueryDocumentSnapshot<Task>> => List<Task>
@@ -38,9 +39,9 @@ class ListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeSelectDate(DateTime newSelectDate) {
+  void changeSelectDate(DateTime newSelectDate, String uId) {
     selectDate = newSelectDate;
-    getAllTasksFromFireStore();
+    getAllTasksFromFireStore(uId);
 
     /// getAllTasksFromFireStore has notifyListeners so
     /// i don't need to add notifyListeners again here
